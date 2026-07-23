@@ -1,0 +1,84 @@
+Crimson Skies -- 147 kernel imports
+==================================================================
+  handled (bridge or thunk)     79  (53.7%)
+  xbox_* exists, needs a wrap   65  mechanical
+  data exports                   0  need a value, not a function
+  no implementation              3  real work
+
+  of the 68 unhandled, 0 have no argument-size entry either --
+  those cannot be stack-safely stubbed and will corrupt the
+  simulated stack if the title ever calls them:
+      (none -- every unrouted import can be stubbed safely)
+
+-- A. needs a bridge_ wrapper around an existing xbox_* --
+     1  AvGetSavedDataAddress                kernel_hal.c
+     2  AvSendTVEncoderOption                kernel_hal.c
+     4  AvSetSavedDataAddress                kernel_hal.c
+    17  ExFreePool                           kernel_pool.c
+    46  HalReadWritePCISpace                 kernel_hal.c
+    62  IoBuildSynchronousFsdRequest         kernel_io.c
+    65  IoCreateDevice                       kernel_io.c
+    69  IoDeleteSymbolicLink                 kernel_io.c
+    74  IoInvalidDeviceRequest               kernel_io.c
+    81  IoStartNextPacket                    kernel_io.c
+    83  IoStartPacket                        kernel_io.c
+    84  IoSynchronousDeviceIoControlRequest  kernel_io.c
+    85  IoSynchronousFsdRequest              kernel_io.c
+    86  IofCallDriver                        kernel_io.c
+    87  IofCompleteRequest                   kernel_io.c
+    97  KeCancelTimer                        kernel_sync.c
+   100  KeDisconnectInterrupt                kernel_hal.c
+   119  KeInsertQueueDpc                     kernel_sync.c
+   137  KeRemoveQueueDpc                     kernel_sync.c
+   139  KeRestoreFloatingPointState          kernel_hal.c
+   142  KeSaveFloatingPointState             kernel_hal.c
+   143  KeSetBasePriorityThread              kernel_thread.c
+   151  KeStallExecutionProcessor            kernel_hal.c
+   153  KeSynchronizeExecution               kernel_sync.c
+   158  KeWaitForMultipleObjects             kernel_sync.c
+   169  MmCreateKernelStack                  kernel_memory.c
+   170  MmDeleteKernelStack                  kernel_memory.c
+   175  MmLockUnlockBufferPages              kernel_memory.c
+   176  MmLockUnlockPhysicalPage             kernel_memory.c
+   180  MmQueryAllocationSize                kernel_memory.c
+   192  NtCreateMutant                       kernel_sync.c
+   215  NtQuerySymbolicLinkObject            kernel_file.c
+   217  NtQueryVirtualMemory                 kernel_memory.c
+   221  NtReleaseMutant                      kernel_sync.c
+   224  NtResumeThread                       kernel_thread.c
+   225  NtSetEvent                           kernel_sync.c
+   228  NtSetSystemTime                      kernel_hal.c
+   233  NtWaitForSingleObject                kernel_sync.c
+   235  NtWaitForMultipleObjectsEx           kernel_sync.c
+   247  ObReferenceObjectByName              kernel_ob.c
+   250  ObfDereferenceObject                 kernel_ob.c
+   252  PhyGetLinkState                      kernel_xbox.c
+   253  PhyInitialize                        kernel_xbox.c
+   260  RtlAnsiStringToUnicodeString         kernel_rtl.c
+   269  RtlCompareMemoryUlong                kernel_rtl.c
+   279  RtlEqualString                       kernel_rtl.c
+   304  RtlTimeFieldsToTime                  kernel_rtl.c
+   305  RtlTimeToTimeFields                  kernel_rtl.c
+   308  RtlUnicodeStringToAnsiString         kernel_rtl.c
+   312  RtlUnwind                            kernel_rtl.c
+   327  XeLoadSection                        kernel_xbox.c
+   328  XeUnloadSection                      kernel_xbox.c
+   335  XcSHAInit                            kernel_crypto.c
+   336  XcSHAUpdate                          kernel_crypto.c
+   337  XcSHAFinal                           kernel_crypto.c
+   338  XcRC4Key                             kernel_crypto.c
+   339  XcRC4Crypt                           kernel_crypto.c
+   340  XcHMAC                               kernel_crypto.c
+   344  XcVerifyPKCS1Signature               kernel_crypto.c
+   345  XcModExp                             kernel_crypto.c
+   346  XcDESKeyParity                       kernel_crypto.c
+   349  XcBlockCryptCBC                      kernel_crypto.c
+   358  HalIsResetOrShutdownPending          kernel_hal.c
+   359  IoMarkIrpMustComplete                kernel_io.c
+   360  HalInitiateShutdown                  kernel_hal.c
+
+-- C. no implementation --
+     8  DbgPrint
+    37  FscSetCacheSize
+   270  RtlCompareString
+

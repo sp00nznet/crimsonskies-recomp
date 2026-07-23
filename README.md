@@ -26,7 +26,7 @@ Built with the [xboxrecomp](https://github.com/sp00nznet/xboxrecomp) toolkit.
 | Disassembly | **Done** | 12,083 functions, 78.6% reachable |
 | Function ID | **Done** | 8,604 classified, 4,438 vtable thunks, 12 CRT |
 | Recompilation | **Done** | 1,329,736 lines of C, 13 files, **0 failures** |
-| Kernel Layer | Not started | 147 imports to map |
+| Kernel Layer | **In progress** | 79/147 handled, 0 stack-unsafe, 65 mechanical wrappers left |
 | First Build | Not started | Pending kernel layer |
 | First Boot | Not started | |
 | Graphics (D3D8 → D3D11) | Not started | |
@@ -39,6 +39,18 @@ Built with the [xboxrecomp](https://github.com/sp00nznet/xboxrecomp) toolkit.
 
 That last number is the one worth watching. Halo build 2276 started at 46. Crimson Skies
 starts at 17 on a *larger* code section, because three toolkit fixes landed first.
+
+**Kernel coverage: 79 / 147 imports handled, and — more importantly — 0 of the
+remaining 68 can corrupt the stack.** `kernel_bridge.c` keeps argument sizes
+separately from dispatch, so an unimplemented import is harmless as long as the
+stub pops the right number of bytes. Twenty of this title's imports had no size
+entry at all; those are filled in now. Full breakdown in
+[docs/kernel-coverage.txt](docs/kernel-coverage.txt), regenerate with:
+
+```bash
+cd ../xboxrecomp
+py -3 -m tools.kernel_audit.coverage ../crimsonskies/game/crimsonskies_analysis.json
+```
 
 ---
 

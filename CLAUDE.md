@@ -89,12 +89,40 @@ recomp      -> src/game/recomp/gen/*.c
 
 ## Current State
 - Pipeline runs clean end to end: 12,083/12,083 functions translated, 0 failures.
-- Kernel layer not started. 147 imports to map. Nothing has been built or run yet.
+- Kernel layer in progress: 79/147 imports handled, **0 stack-unsafe**.
+  Nothing has been built or run yet.
 - `src/game/` has no CMakeLists yet; the top-level `add_subdirectory(src/game)` is
   commented out until there is something to build.
 
+## Kernel layer
+
+Check the gap at any time:
+
+```bash
+cd ../xboxrecomp
+py -3 -m tools.kernel_audit.coverage ../crimsonskies/game/crimsonskies_analysis.json
+```
+
+Current: **79 handled, 65 need a mechanical `bridge_` wrapper, 3 unimplemented
+(DbgPrint, FscSetCacheSize, RtlCompareString), 0 stack-unsafe.**
+
+The distinction that matters is not "implemented vs missing", it is **sized vs
+unsized**. `kernel_bridge.c` keeps its argument-size table separate from its
+dispatch table, so an unrouted ordinal is harmless: the generic stub pops the
+right number of bytes and returns 0. An ordinal with *no size entry* is the
+dangerous one -- it pops the wrong amount and corrupts the simulated stack for
+everything upstream, surfacing far from the call as mangled callee-saved
+registers. All 20 of this title's unsized imports have been filled in.
+
+When adding a wrapper, take the argument count from the `xbox_*` prototype in
+`xboxrecomp/src/kernel/*.c`, not from a header or from memory. Two of this
+title's imports are `__fastcall` (`IofCallDriver`, `IofCompleteRequest`) and
+therefore take **zero** stack bytes; sizing them by argument count is worse than
+leaving them out. `ObfDereferenceObject` is the same shape.
+
 ## Next Steps
-1. Kernel layer: map the 147 imports onto xboxrecomp's `xbox_kernel`.
+1. Bridge wrappers for the 65 mechanical ones, prioritised by what the boot path
+   actually calls (turn on feedback and find out, rather than guessing).
 2. `src/game/main.c` + `recomp_manual.c` from `xboxrecomp/templates/new-game/`.
 3. First build, then first boot.
 4. Turn on `-DCS_ICALL_FEEDBACK=ON` for the first runs and feed
